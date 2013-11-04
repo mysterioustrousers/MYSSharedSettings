@@ -9,5 +9,5 @@
 #import <Foundation/Foundation.h>
 
 @interface MYSSharedSettings : NSObject
-
++ (MYSSharedSettings *)sharedSettings;
 @end
