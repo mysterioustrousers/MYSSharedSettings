@@ -8,6 +8,49 @@
 
 #import <Foundation/Foundation.h>
 
+
 @interface MYSSharedSettings : NSObject
-+ (MYSSharedSettings *)sharedSettings;
+
+/**
+ *  If YES, this will attempt to save and read all property values to NSUbiquitousKeyValueStore in addition to
+ *  NSUserDefaults. If a value for the same key exists in both NSUbiquitousKeyValueStore and NSUserDefaults, the value
+ *  in NSUserDefaults is over-written. If a value for a key exists in NSUserDefaults but not in NSUbiquitousKeyValueStore
+ *  then the value is added for that key in NSUbiquitousKeyValueStore.
+ */
+@property (nonatomic, assign) BOOL syncSettingsWithiCloud;
+
+/**
+ *  The shared instance that you should use with your subclass.
+ */
++ (instancetype)sharedSettings;
+
+/**
+ *  Override to customize how a property name is transformed into a key for storing the property's value. If you are
+ *  using NSUbiquitousKeyValueStore for other things, appending a prefix is *highly* recommended. When the 
+ *  NSUbiquitousKeyValueStore changed notifications come in, it uses this prefix to avoid adding non-settings key-value
+ *  pairs to NSUserDefaults.
+ *
+ *  @param propertyName The string of the dynamic property you've added.
+ *
+ *  @return Returns `propertyName` prefixed with `MYSSharedSettings.propertyName` unless
+ *          overriden by your subclass.
+ */
+- (NSString *)keyForPropertyName:(NSString *)propertyName;
+
+/**
+ *  Override and return a dictionary of defaults. The keys should be the string of the property name you want to
+ *  provide a default value for. The key should match the property name exactly.
+ *
+ *  @return A dictionary that contains the default values for the properties of your subclass. Returns `nil` by default.
+ */
+- (NSDictionary *)defaults;
+
 @end
+
+
+
+/**
+ *  This notification is posted when shared settings changes come in from iCloud.
+ */
+extern NSString *const MYSSharedSettingsChangedNotification;
+

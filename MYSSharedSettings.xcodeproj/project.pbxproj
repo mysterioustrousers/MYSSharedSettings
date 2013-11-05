@@ -16,6 +16,8 @@
 		C22521E318283FC30045E944 /* libMYSSharedSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C22521CB18283FC30045E944 /* libMYSSharedSettings.a */; };
 		C22521E918283FC30045E944 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C22521E718283FC30045E944 /* InfoPlist.strings */; };
 		C22521EB18283FC30045E944 /* MYSSharedSettingsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C22521EA18283FC30045E944 /* MYSSharedSettingsTests.m */; };
+		C2CA998218286007008866C6 /* TESTSharedSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = C2CA998118286007008866C6 /* TESTSharedSettings.m */; };
+		E4B5D2526D9D4CF09CD512F0 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B8A13A67ABB44B8E9F2AAC48 /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +44,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4036C4DB6CB543DAAAB722B1 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		B8A13A67ABB44B8E9F2AAC48 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C22521CB18283FC30045E944 /* libMYSSharedSettings.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMYSSharedSettings.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C22521CE18283FC30045E944 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C22521D218283FC30045E944 /* MYSSharedSettings-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MYSSharedSettings-Prefix.pch"; sourceTree = "<group>"; };
@@ -53,6 +57,8 @@
 		C22521E618283FC30045E944 /* MYSSharedSettingsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MYSSharedSettingsTests-Info.plist"; sourceTree = "<group>"; };
 		C22521E818283FC30045E944 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C22521EA18283FC30045E944 /* MYSSharedSettingsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MYSSharedSettingsTests.m; sourceTree = "<group>"; };
+		C2CA998018286007008866C6 /* TESTSharedSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TESTSharedSettings.h; sourceTree = "<group>"; };
+		C2CA998118286007008866C6 /* TESTSharedSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TESTSharedSettings.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +67,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C22521CF18283FC30045E944 /* Foundation.framework in Frameworks */,
+				E4B5D2526D9D4CF09CD512F0 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +92,7 @@
 				C22521E418283FC30045E944 /* MYSSharedSettingsTests */,
 				C22521CD18283FC30045E944 /* Frameworks */,
 				C22521CC18283FC30045E944 /* Products */,
+				4036C4DB6CB543DAAAB722B1 /* Pods.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -103,6 +111,7 @@
 				C22521CE18283FC30045E944 /* Foundation.framework */,
 				C22521DC18283FC30045E944 /* XCTest.framework */,
 				C22521DF18283FC30045E944 /* UIKit.framework */,
+				B8A13A67ABB44B8E9F2AAC48 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -128,6 +137,8 @@
 		C22521E418283FC30045E944 /* MYSSharedSettingsTests */ = {
 			isa = PBXGroup;
 			children = (
+				C2CA998018286007008866C6 /* TESTSharedSettings.h */,
+				C2CA998118286007008866C6 /* TESTSharedSettings.m */,
 				C22521EA18283FC30045E944 /* MYSSharedSettingsTests.m */,
 				C22521E518283FC30045E944 /* Supporting Files */,
 			);
@@ -150,9 +161,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C22521EE18283FC30045E944 /* Build configuration list for PBXNativeTarget "MYSSharedSettings" */;
 			buildPhases = (
+				46D8166D5CDE4E949CB1860B /* Check Pods Manifest.lock */,
 				C22521C718283FC30045E944 /* Sources */,
 				C22521C818283FC30045E944 /* Frameworks */,
 				C22521C918283FC30045E944 /* CopyFiles */,
+				4BCA577C6220462D833DE42C /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -219,6 +232,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		46D8166D5CDE4E949CB1860B /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		4BCA577C6220462D833DE42C /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		C22521C718283FC30045E944 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -233,6 +279,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C22521EB18283FC30045E944 /* MYSSharedSettingsTests.m in Sources */,
+				C2CA998218286007008866C6 /* TESTSharedSettings.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,11 +377,11 @@
 		};
 		C22521EF18283FC30045E944 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4036C4DB6CB543DAAAB722B1 /* Pods.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/MYSSharedSettings.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MYSSharedSettings/MYSSharedSettings-Prefix.pch";
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -342,11 +389,11 @@
 		};
 		C22521F018283FC30045E944 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4036C4DB6CB543DAAAB722B1 /* Pods.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/MYSSharedSettings.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MYSSharedSettings/MYSSharedSettings-Prefix.pch";
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -409,6 +456,7 @@
 				C22521F018283FC30045E944 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C22521F118283FC30045E944 /* Build configuration list for PBXNativeTarget "MYSSharedSettingsTests" */ = {
 			isa = XCConfigurationList;
@@ -417,6 +465,7 @@
 				C22521F318283FC30045E944 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -12,20 +12,105 @@
 
 @implementation MYSSharedSettings
 
-+ (MYSSharedSettings *)sharedSettings
++ (instancetype)sharedSettings
 {
-    static MYSSharedSettings *settings = nil;
+    static id settings = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        settings = [MYSSharedSettings new];
+        settings = [[self class] new];
     });
     return settings;
 }
 
-+ (void)load
+- (id)init
 {
-    MYSClass *mysClass = [[MYSClass alloc] initWithClass:self];
+    self = [super init];
+    if (self) {
+        self.syncSettingsWithiCloud = YES;
+        [self setupMethods];
+        [self setupNotifications];
+        [self setupDefaults];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+
+
+#pragma mark - Public
+
+- (NSString *)keyForPropertyName:(NSString *)propertyName
+{
+    return [NSString stringWithFormat:@"MYSSharedSettings.%@", propertyName];
+}
+
+- (NSDictionary *)defaults
+{
+    return nil;
+}
+
+
+
+
+#pragma mark (properties)
+
+- (void)setSyncSettingsWithiCloud:(BOOL)syncSettingsWithiCloud
+{
+    NSString *key = [self keyForPropertyName:@"syncSettingsWithiCloud"];
+    [[NSUserDefaults standardUserDefaults] setBool:syncSettingsWithiCloud forKey:key];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (BOOL)syncSettingsWithiCloud
+{
+    NSString *key = [self keyForPropertyName:@"syncSettingsWithiCloud"];
+    return [[NSUserDefaults standardUserDefaults] boolForKey:key];
+}
+
+
+
+
+#pragma mark - Notification
+
+- (void)ubiquitousStoreDidChange:(NSNotification *)n
+{
+    if (self.syncSettingsWithiCloud) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            @synchronized(self) {
+                NSString *prefix = [self keyForPropertyName:@""];
+                NSUbiquitousKeyValueStore *store = [NSUbiquitousKeyValueStore defaultStore];
+                NSArray *keys = [n userInfo][NSUbiquitousKeyValueStoreChangedKeysKey];
+                for (NSString *changedKey in keys) {
+                    if ([changedKey hasPrefix:prefix]) {
+                        id obj = [store objectForKey:changedKey];
+                        [[NSUserDefaults standardUserDefaults] setObject:obj forKey:changedKey];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:MYSSharedSettingsChangedNotification
+                                                                            object:self];
+                    }
+                }
+            }
+        });
+    }
+}
+
+
+
+
+#pragma mark - Private
+
+#pragma mark (setup)
+
+- (void)setupMethods
+{
+    MYSClass *mysClass = [[MYSClass alloc] initWithClass:[self class]];
+
     for (MYSProperty *property in mysClass.properties) {
+
         if (!property.isDynamic) continue;
 
         id getterBlock = nil;
@@ -41,100 +126,124 @@
             case MYSTypeUnsignedLong:
             case MYSTypeUnsignedLongLong:
             {
-                void *key = (void *)[property.name hash];
+                NSString *propertyName = [property.name copy];
+
                 getterBlock = ^long long(id self) {
-                    NSNumber *number = objc_getAssociatedObject(self, key);
-                    return [number longLongValue];
+                    @synchronized(self) {
+                        return [[self settingsObjectForPropertyName:propertyName] longLongValue];
+                    }
                 };
 
                 setterBlock = ^(id self, long long value) {
-                    objc_setAssociatedObject(self, key, @(value), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    @synchronized(self) {
+                        [self setSettingsObject:@(value) forPropertyName:propertyName];
+                    }
                 };
             }
                 break;
 
             case MYSTypeBool:
             {
-                void *key = (void *)[property.name hash];
+                NSString *propertyName = [property.name copy];
+
                 getterBlock = ^BOOL(id self) {
-                    NSNumber *number = objc_getAssociatedObject(self, key);
-                    return [number boolValue];
+                    @synchronized(self) {
+                        return [[self settingsObjectForPropertyName:propertyName] boolValue];
+                    }
                 };
 
                 setterBlock = ^(id self, BOOL value) {
-                    objc_setAssociatedObject(self, key, @(value), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    @synchronized(self) {
+                        [self setSettingsObject:@(value) forPropertyName:propertyName];
+                    }
                 };
             }
 
             case MYSTypeChar:
             {
-                void *key = (void *)[property.name hash];
+                NSString *propertyName = [property.name copy];
+
                 getterBlock = ^char(id self) {
-                    NSNumber *number = objc_getAssociatedObject(self, key);
-                    return [number charValue];
+                    @synchronized(self) {
+                        return [[self settingsObjectForPropertyName:propertyName] charValue];
+                    }
                 };
 
                 setterBlock = ^(id self, char value) {
-                    objc_setAssociatedObject(self, key, @(value), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    @synchronized(self) {
+                        [self setSettingsObject:@(value) forPropertyName:propertyName];
+                    }
                 };
             }
                 break;
 
             case MYSTypeInt:
             {
-                void *key = (void *)[property.name hash];
+                NSString *propertyName = [property.name copy];
+
                 getterBlock = ^int(id self) {
-                    NSNumber *number = objc_getAssociatedObject(self, key);
-                    return [number intValue];
+                    @synchronized(self) {
+                        return [[self settingsObjectForPropertyName:propertyName] intValue];
+                    }
                 };
 
                 setterBlock = ^(id self, int value) {
-                    objc_setAssociatedObject(self, key, @(value), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    @synchronized(self) {
+                        [self setSettingsObject:@(value) forPropertyName:propertyName];
+                    }
                 };
             }
                 break;
 
             case MYSTypeFloat:
             {
-                void *key = (void *)[property.name hash];
+                NSString *propertyName = [property.name copy];
+
                 getterBlock = ^float(id self) {
-                    NSNumber *number = objc_getAssociatedObject(self, key);
-                    return [number floatValue];
+                    @synchronized(self) {
+                        return [[self settingsObjectForPropertyName:propertyName] floatValue];
+                    }
                 };
 
                 setterBlock = ^(id self, float value) {
-                    objc_setAssociatedObject(self, key, @(value), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    @synchronized(self) {
+                        [self setSettingsObject:@(value) forPropertyName:propertyName];
+                    }
                 };
             }
                 break;
 
             case MYSTypeDouble:
             {
-                void *key = (void *)[property.name hash];
+                NSString *propertyName = [property.name copy];
+
                 getterBlock = ^double(id self) {
-                    NSNumber *number = objc_getAssociatedObject(self, key);
-                    return [number doubleValue];
+                    @synchronized(self) {
+                        return [[self settingsObjectForPropertyName:propertyName] doubleValue];
+                    }
                 };
 
                 setterBlock = ^(id self, double value) {
-                    objc_setAssociatedObject(self, key, @(value), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    @synchronized(self) {
+                        [self setSettingsObject:@(value) forPropertyName:propertyName];
+                    }
                 };
             }
                 break;
 
             case MYSTypeObject:
             {
-                void *key = (void *)[property.name hash];
+                NSString *propertyName = [property.name copy];
+
                 getterBlock = ^id(id self) {
-                    return objc_getAssociatedObject(self, key);
+                    @synchronized(self) {
+                        return [self settingsObjectForPropertyName:propertyName];
+                    }
                 };
 
                 setterBlock = ^(id self, id value) {
-                    if ([self conformsToProtocol:@protocol(NSCopying)]) {
-                        objc_setAssociatedObject(self, key, value, OBJC_ASSOCIATION_COPY_NONATOMIC);
-                    }
-                    else {
-                        objc_setAssociatedObject(self, key, value, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    @synchronized(self) {
+                        [self setSettingsObject:value forPropertyName:propertyName];
                     }
                 };
             }
@@ -145,15 +254,76 @@
                             format:@"Unsupported type of property \"%@\" in class %@", property.name, self];
                 break;
         }
-
+        
         MYSMethod *getter = [[MYSMethod alloc] initWithName:property.getter implementationBlock:getterBlock];
         BOOL worked = [mysClass addMethod:getter];
         
-        if (!property.isReadOnly) {
-            MYSMethod *setter = [[MYSMethod alloc] initWithName:property.setter implementationBlock:setterBlock];
-            worked = [mysClass addMethod:setter];
+        MYSMethod *setter = [[MYSMethod alloc] initWithName:property.setter implementationBlock:setterBlock];
+        worked = [mysClass addMethod:setter];
+    }
+}
+
+- (void)setupNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(ubiquitousStoreDidChange:)
+                                                 name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
+                                               object:[NSUbiquitousKeyValueStore defaultStore]];
+}
+
+- (void)setupDefaults
+{
+    @synchronized(self) {
+        NSDictionary *defaultsDict = [self defaults];
+        if ([defaultsDict count] > 0) {
+            NSMutableDictionary *defaults = [NSMutableDictionary new];
+            for (NSString *propertyName in [defaultsDict allKeys]) {
+                id object       = defaultsDict[propertyName];
+                NSString *key   = [self keyForPropertyName:propertyName];
+                defaults[key]   = object;
+            }
+            [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
         }
     }
 }
 
+
+#pragma mark (setting values)
+
+- (id)settingsObjectForPropertyName:(NSString *)propertyName
+{
+    @synchronized(self) {
+        NSString *key = [self keyForPropertyName:propertyName];
+
+        id object = nil;
+
+        if (self.syncSettingsWithiCloud) {
+            [[NSUbiquitousKeyValueStore defaultStore] objectForKey:key];
+        }
+
+        if (!object) {
+            object = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+        }
+        return object;
+    }
+}
+
+- (void)setSettingsObject:(id)object forPropertyName:(NSString *)propertyName
+{
+    @synchronized(self) {
+        NSString *key = [self keyForPropertyName:propertyName];
+        if (self.syncSettingsWithiCloud) {
+            [[NSUbiquitousKeyValueStore defaultStore] setObject:object forKey:key];
+        }
+        [[NSUserDefaults standardUserDefaults] setObject:object forKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+}
+
+
 @end
+
+
+
+
+NSString *const MYSSharedSettingsChangedNotification = @"MYSSharedSettingsChangedNotification";
