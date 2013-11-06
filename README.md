@@ -36,6 +36,8 @@ Then you read and set the settings properties like normal:
 
 	#import "CVSharedSettings.h"
 	
+	[YourSubclass sharedSettings].syncSettingsWithiCloud = YES;
+	
 	[CVSharedSettings sharedSettings].remindersEnabled = YES;
 	
 	if ([CVSharedSettings sharedSettings].remindersEnabled) {
