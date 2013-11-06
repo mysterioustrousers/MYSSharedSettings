@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-
+/**
+ *  This class allows you to dynamically add properties that are synced over iCloud using NSUbiquitousKeyValueStore if
+ *  enabled. It is thread-safe.
+ */
 @interface MYSSharedSettings : NSObject
 
 /**
@@ -44,6 +47,13 @@
  *  @return A dictionary that contains the default values for the properties of your subclass. Returns `nil` by default.
  */
 - (NSDictionary *)defaults;
+
+/**
+ *  This over-writes any values with the same (prefixed) keys in NSUbiquitousKeyValueStore with the values 
+ *  in NSUserDefaults. You might call this after enabling `syncSettingsWithiCloud`.
+ */
+- (void)pushLocalToiCloud;
+
 
 @end
 

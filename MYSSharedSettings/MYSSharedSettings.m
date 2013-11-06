@@ -26,10 +26,10 @@
 {
     self = [super init];
     if (self) {
-        self.syncSettingsWithiCloud = YES;
         [self setupMethods];
         [self setupNotifications];
         [self setupDefaults];
+        [[NSUbiquitousKeyValueStore defaultStore] synchronize];
     }
     return self;
 }
@@ -54,6 +54,22 @@
     return nil;
 }
 
+- (void)pushLocalToiCloud
+{
+    @synchronized(self) {
+        NSDictionary *localDefaults = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+        NSString *prefix = [self keyForPropertyName:@""];
+        for (NSString *key in [localDefaults allKeys]) {
+            if ([key hasPrefix:prefix]) {
+                id object = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+                [[NSUbiquitousKeyValueStore defaultStore] setObject:object forKey:key];
+            }
+        }
+        [[NSUbiquitousKeyValueStore defaultStore] synchronize];
+    }
+}
+
+
 
 
 
@@ -61,15 +77,19 @@
 
 - (void)setSyncSettingsWithiCloud:(BOOL)syncSettingsWithiCloud
 {
-    NSString *key = [self keyForPropertyName:@"syncSettingsWithiCloud"];
-    [[NSUserDefaults standardUserDefaults] setBool:syncSettingsWithiCloud forKey:key];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    @synchronized(self) {
+        NSString *key = [self keyForPropertyName:@"syncSettingsWithiCloud"];
+        [[NSUserDefaults standardUserDefaults] setBool:syncSettingsWithiCloud forKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
 - (BOOL)syncSettingsWithiCloud
 {
-    NSString *key = [self keyForPropertyName:@"syncSettingsWithiCloud"];
-    return [[NSUserDefaults standardUserDefaults] boolForKey:key];
+    @synchronized(self) {
+        NSString *key = [self keyForPropertyName:@"syncSettingsWithiCloud"];
+        return [[NSUserDefaults standardUserDefaults] boolForKey:key];
+    }
 }
 
 
@@ -89,6 +109,7 @@
                     if ([changedKey hasPrefix:prefix]) {
                         id obj = [store objectForKey:changedKey];
                         [[NSUserDefaults standardUserDefaults] setObject:obj forKey:changedKey];
+                        [[NSUserDefaults standardUserDefaults] synchronize];
                         [[NSNotificationCenter defaultCenter] postNotificationName:MYSSharedSettingsChangedNotification
                                                                             object:self];
                     }
@@ -275,15 +296,15 @@
 {
     @synchronized(self) {
         NSDictionary *defaultsDict = [self defaults];
-        if ([defaultsDict count] > 0) {
-            NSMutableDictionary *defaults = [NSMutableDictionary new];
-            for (NSString *propertyName in [defaultsDict allKeys]) {
-                id object       = defaultsDict[propertyName];
-                NSString *key   = [self keyForPropertyName:propertyName];
-                defaults[key]   = object;
-            }
-            [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
+        NSMutableDictionary *defaults = [NSMutableDictionary new];
+        for (NSString *propertyName in [defaultsDict allKeys]) {
+            id object       = defaultsDict[propertyName];
+            NSString *key   = [self keyForPropertyName:propertyName];
+            defaults[key]   = object;
         }
+        NSString *iCloudSyncKey = [self keyForPropertyName:@"syncSettingsWithiCloud"];
+        defaults[iCloudSyncKey] = @YES;
+        [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
     }
 }
 
@@ -312,8 +333,9 @@
 {
     @synchronized(self) {
         NSString *key = [self keyForPropertyName:propertyName];
-        if (self.syncSettingsWithiCloud) {
+        if (self.syncSettingsWithiCloud && ![propertyName hasPrefix:@"local"]) {
             [[NSUbiquitousKeyValueStore defaultStore] setObject:object forKey:key];
+            [[NSUbiquitousKeyValueStore defaultStore] synchronize];
         }
         [[NSUserDefaults standardUserDefaults] setObject:object forKey:key];
         [[NSUserDefaults standardUserDefaults] synchronize];
