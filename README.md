@@ -44,6 +44,8 @@ Then you read and set the settings properties like normal:
 		// ... whatever happens when reminders are enabled
 	}
 
+The same properties in your app running on other devices will now have the values you've set.
+
 
 #### Providing Defaults
 
