@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
                    * Declare the properties as @dynamic in @implementation.
                    * Now you can use it like so: `[YourSubclass sharedSettings].themeColor = [UIColor blackColor];`
                    * Turn on iCloud syncing with `[YourSubclass sharedSettings].syncSettingsWithiCloud = YES;` This will store the settings in
-                   both NSUserDefaults and `NSUbiquitousKeyValueStore`. 
+                   both `NSUserDefaults` and `NSUbiquitousKeyValueStore`. 
                    DESC
   s.homepage     = "https://github.com/mysterioustrousers/MYSSharedSettings"
   s.license      = 'MIT'
