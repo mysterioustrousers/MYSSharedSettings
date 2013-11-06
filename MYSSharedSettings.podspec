@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "MYSSharedSettings"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "Access local settings and settings shared via iCloud with properties."
   s.description  = <<-DESC
                    ### Instructions

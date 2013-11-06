@@ -57,6 +57,12 @@
  */
 - (void)pushLocalToiCloud;
 
+/**
+ *  An array of property names that have changed since you last called this method (or first used the shared settings
+ *  instance.
+ */
+- (NSArray *)changedPropertyNames;
+
 
 @end
 

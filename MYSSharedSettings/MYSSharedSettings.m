@@ -10,6 +10,11 @@
 #import <MYSRuntime.h>
 
 
+@interface MYSSharedSettings ()
+@property (nonatomic, strong) NSMutableSet *changedProperties;
+@end
+
+
 @implementation MYSSharedSettings
 
 + (instancetype)sharedSettings
@@ -29,6 +34,7 @@
         [self setupMethods];
         [self setupNotifications];
         [self setupDefaults];
+        self.changedProperties = [NSMutableSet new];
         [[NSUbiquitousKeyValueStore defaultStore] synchronize];
     }
     return self;
@@ -69,6 +75,12 @@
     }
 }
 
+- (NSArray *)changedPropertyNames
+{
+    NSArray *array = [self.changedProperties copy];
+    [self.changedProperties removeAllObjects];
+    return array;
+}
 
 
 
@@ -101,19 +113,29 @@
 {
     if (self.syncSettingsWithiCloud) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            BOOL containedPropertyChanges = NO;
             @synchronized(self) {
                 NSString *prefix = [self keyForPropertyName:@""];
                 NSUbiquitousKeyValueStore *store = [NSUbiquitousKeyValueStore defaultStore];
                 NSArray *keys = [n userInfo][NSUbiquitousKeyValueStoreChangedKeysKey];
                 for (NSString *changedKey in keys) {
                     if ([changedKey hasPrefix:prefix]) {
+                        containedPropertyChanges = YES;
                         id obj = [store objectForKey:changedKey];
                         [[NSUserDefaults standardUserDefaults] setObject:obj forKey:changedKey];
                         [[NSUserDefaults standardUserDefaults] synchronize];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:MYSSharedSettingsChangedNotification
-                                                                            object:self];
+                        NSString *propertyName = [changedKey stringByReplacingOccurrencesOfString:prefix
+                                                                                       withString:@""
+                                                                                          options:0
+                                                                                            range:NSMakeRange(0, [prefix length])];
+                        [self.changedProperties addObject:propertyName];
+
                     }
                 }
+            }
+            if (containedPropertyChanges) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:MYSSharedSettingsChangedNotification
+                                                                    object:self];
             }
         });
     }
@@ -277,10 +299,10 @@
         }
         
         MYSMethod *getter = [[MYSMethod alloc] initWithName:property.getter implementationBlock:getterBlock];
-        BOOL worked = [mysClass addMethod:getter];
+        [mysClass addMethod:getter];
         
         MYSMethod *setter = [[MYSMethod alloc] initWithName:property.setter implementationBlock:setterBlock];
-        worked = [mysClass addMethod:setter];
+        [mysClass addMethod:setter];
     }
 }
 
@@ -298,9 +320,11 @@
         NSDictionary *defaultsDict = [self defaults];
         NSMutableDictionary *defaults = [NSMutableDictionary new];
         for (NSString *propertyName in [defaultsDict allKeys]) {
-            id object       = defaultsDict[propertyName];
-            NSString *key   = [self keyForPropertyName:propertyName];
-            defaults[key]   = object;
+            id object = defaultsDict[propertyName];
+            if (object) {
+                NSString *key   = [self keyForPropertyName:propertyName];
+                defaults[key]   = object;
+            }
         }
         NSString *iCloudSyncKey = [self keyForPropertyName:@"syncSettingsWithiCloud"];
         defaults[iCloudSyncKey] = @YES;
@@ -332,6 +356,7 @@
 - (void)setSettingsObject:(id)object forPropertyName:(NSString *)propertyName
 {
     @synchronized(self) {
+        [self.changedProperties addObject:propertyName];
         NSString *key = [self keyForPropertyName:propertyName];
         if (self.syncSettingsWithiCloud && ![propertyName hasPrefix:@"local"]) {
             [[NSUbiquitousKeyValueStore defaultStore] setObject:object forKey:key];
