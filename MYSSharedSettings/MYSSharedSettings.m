@@ -159,15 +159,15 @@
         id getterBlock = nil;
         id setterBlock = nil;
 
-        switch (property.type) {
-            case MYSTypeShort:
-            case MYSTypeLong:
-            case MYSTypeLongLong:
-            case MYSTypeUnsignedChar:
-            case MYSTypeUnsignedShort:
-            case MYSTypeUnsignedInt:
-            case MYSTypeUnsignedLong:
-            case MYSTypeUnsignedLongLong:
+        switch (property.type.type) {
+            case MYSTypeTypeShort:
+            case MYSTypeTypeLong:
+            case MYSTypeTypeLongLong:
+            case MYSTypeTypeUnsignedChar:
+            case MYSTypeTypeUnsignedShort:
+            case MYSTypeTypeUnsignedInt:
+            case MYSTypeTypeUnsignedLong:
+            case MYSTypeTypeUnsignedLongLong:
             {
                 NSString *propertyName = [property.name copy];
 
@@ -185,7 +185,7 @@
             }
                 break;
 
-            case MYSTypeBool:
+            case MYSTypeTypeBool:
             {
                 NSString *propertyName = [property.name copy];
 
@@ -202,7 +202,7 @@
                 };
             }
 
-            case MYSTypeChar:
+            case MYSTypeTypeChar:
             {
                 NSString *propertyName = [property.name copy];
 
@@ -220,7 +220,7 @@
             }
                 break;
 
-            case MYSTypeInt:
+            case MYSTypeTypeInt:
             {
                 NSString *propertyName = [property.name copy];
 
@@ -238,7 +238,7 @@
             }
                 break;
 
-            case MYSTypeFloat:
+            case MYSTypeTypeFloat:
             {
                 NSString *propertyName = [property.name copy];
 
@@ -256,7 +256,7 @@
             }
                 break;
 
-            case MYSTypeDouble:
+            case MYSTypeTypeDouble:
             {
                 NSString *propertyName = [property.name copy];
 
@@ -274,7 +274,7 @@
             }
                 break;
 
-            case MYSTypeObject:
+            case MYSTypeTypeObject:
             {
                 NSString *propertyName = [property.name copy];
 
