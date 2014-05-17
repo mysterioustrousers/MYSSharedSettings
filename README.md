@@ -35,11 +35,11 @@ Add this to your Podfile:
 Then you read and set the settings properties like normal:
 
 	#import "CVSharedSettings.h"
-	
+
 	[YourSubclass sharedSettings].syncSettingsWithiCloud = YES;
-	
+
 	[CVSharedSettings sharedSettings].remindersEnabled = YES;
-	
+
 	if ([CVSharedSettings sharedSettings].remindersEnabled) {
 		// ... whatever happens when reminders are enabled
 	}
@@ -66,7 +66,7 @@ You can override the `defaults` method to provide defaults for `NSUserDefaults`:
              @"defaultAllDayReminderAlarms"         : @[@(MTDateConstantSecondsInHour * 6)]
              };
 	}
-	
+
 
 #### Notifications
 
@@ -88,3 +88,9 @@ store it in NSUSerDefaults. (e.g. `localViewMode`)
 #### Pushing Local Settings to iCloud
 
 Call `- (void)pushLocalToiCloud` to overwrite any settings currently in iCloud with the local settings in `NSUserDefaults`.
+
+
+### Changelog
+
+* `ChangedMYSSharedSettingsChangedNotification` to fire both when ubiquity values change, but also local values. And the object
+is not an array of changed property keys.
