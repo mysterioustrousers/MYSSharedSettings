@@ -113,14 +113,14 @@
 {
     if (self.syncSettingsWithiCloud) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            BOOL containedPropertyChanges = NO;
+            NSMutableArray *changedProperties = [NSMutableArray new];
             @synchronized(self) {
                 NSString *prefix = [self keyForPropertyName:@""];
                 NSUbiquitousKeyValueStore *store = [NSUbiquitousKeyValueStore defaultStore];
                 NSArray *keys = [n userInfo][NSUbiquitousKeyValueStoreChangedKeysKey];
                 for (NSString *changedKey in keys) {
                     if ([changedKey hasPrefix:prefix]) {
-                        containedPropertyChanges = YES;
+                        [changedProperties addObject:changedKey];
                         id obj = [store objectForKey:changedKey];
                         [[NSUserDefaults standardUserDefaults] setObject:obj forKey:changedKey];
                         [[NSUserDefaults standardUserDefaults] synchronize];
@@ -133,9 +133,9 @@
                     }
                 }
             }
-            if (containedPropertyChanges) {
+            if ([changedProperties count] > 0) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:MYSSharedSettingsChangedNotification
-                                                                    object:self];
+                                                                    object:changedProperties];
             }
         });
     }
@@ -364,7 +364,22 @@
         }
         [[NSUserDefaults standardUserDefaults] setObject:object forKey:key];
         [[NSUserDefaults standardUserDefaults] synchronize];
+        [[NSNotificationCenter defaultCenter] postNotificationName:MYSSharedSettingsChangedNotification
+                                                            object:@[propertyName]];
     }
+}
+
+
+#pragma mark (KVO)
+
+- (id)valueForKey:(NSString *)key
+{
+    return [self settingsObjectForPropertyName:key];
+}
+
+- (void)setValue:(id)value forKey:(NSString *)key
+{
+    [self setSettingsObject:value forPropertyName:key];
 }
 
 
