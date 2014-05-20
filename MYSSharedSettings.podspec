@@ -20,5 +20,5 @@ Pod::Spec.new do |s|
   s.source_files  = 'MYSSharedSettings/*.{h,m}'
   s.framework  = 'Foundation'
   s.requires_arc = true
-  s.dependency 'MYSRuntime', '~> 0.0.2'
+  s.dependency 'MYSRuntime', '~> 0.0.3'
 end
