@@ -1,5 +1,5 @@
 PODS:
-  - MYSRuntime (0.0.2)
+  - MYSRuntime (0.0.5)
 
 DEPENDENCIES:
   - MYSRuntime (from `libs/MYSRuntime`)
@@ -9,6 +9,6 @@ EXTERNAL SOURCES:
     :path: libs/MYSRuntime
 
 SPEC CHECKSUMS:
-  MYSRuntime: 54beb28afb12699cb549b89d5c6ab7e21425310f
+  MYSRuntime: e87a3cfbb4a378ebcd2d2194aec37a3f904a5caf
 
-COCOAPODS: 0.33.0
+COCOAPODS: 0.39.0
