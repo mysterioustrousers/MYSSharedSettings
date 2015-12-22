@@ -7,7 +7,7 @@
 //
 
 #import "MYSSharedSettings.h"
-#import <MYSRuntime.h>
+#import "MYSRuntime.h"
 
 
 @interface MYSSharedSettings ()
