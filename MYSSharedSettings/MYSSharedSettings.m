@@ -343,7 +343,7 @@
         id object = nil;
 
         if (self.syncSettingsWithiCloud) {
-            [[NSUbiquitousKeyValueStore defaultStore] objectForKey:key];
+            object = [[NSUbiquitousKeyValueStore defaultStore] objectForKey:key];
         }
 
         if (!object) {
